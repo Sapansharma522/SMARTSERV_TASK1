@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Display</title>
+   <style>
+    body {
+    font-family: Arial, sans-serif;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+   </style>
+</head>
+<body>
+    <div id="productList"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    fetchDataAndDisplay();
+});
+
+async function fetchDataAndDisplay() {
+    try {
+        const apiUrl = 'https://s3.amazonaws.com/open-to-cors/assignment.json';
+        const response = await fetch(apiUrl);
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // Convert products to an array before sorting
+            const productsArray = Object.values(data.products);
+
+            // Order products by descending popularity
+            const orderedProducts = productsArray.sort((a, b) => b.popularity - a.popularity);
+           
+            //We call the function for display the data in grid table and
+            // passing the list of data object for given condition(orderedProducts)
+            displayProducts(orderedProducts);
+            //if response is not 200
+        } else {
+            console.error('Failed to fetch data:', response.status);
+        }
+        //Some Error Occured
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+//Create the function for display the data in grid table 
+function displayProducts(products) {
+    const productListContainer = document.getElementById('productList');
+    const table = document.createElement('table');
+
+    // Create table header
+    const headerRow = table.insertRow();
+    headerRow.innerHTML = '<th>Title</th><th>Price</th><th>Popularity</th>';
+
+    // Create table rows
+    products.forEach(product => {
+        const row = table.insertRow();
+        row.innerHTML = `<td>${product.title}</td><td>${product.price}</td><td>${product.popularity}</td>`;
+    });
+
+    // Append table to the container
+    productListContainer.appendChild(table);
+}
+
+    </script>
+</body>
+</html>
